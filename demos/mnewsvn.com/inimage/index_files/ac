@@ -1,0 +1,42 @@
+if (navigator && navigator.platform) {
+    var sasIsIosUiwebview = false;
+    if (navigator.platform.substr(0,2) === 'iP') {
+      var lte9 = /constructor/i.test(window.HTMLElement);
+      var nav = window.navigator, ua = nav.userAgent, idb = !!window.indexedDB;
+      if (ua.indexOf('Safari') !== -1 && ua.indexOf('Version') !== -1 && !nav.standalone) {      
+        sasIsIosUiwebview = false;
+      } else if ((!idb && lte9) || !window.statusbar.visible) {
+        sasIsIosUiwebview = true;
+      } else if ((window.webkit && window.webkit.messageHandlers) || !lte9 || idb) {
+        sasIsIosUiwebview = true;
+      }
+    }
+    if (!sasIsIosUiwebview) {
+        var smartCsync=document.createElement('IFRAME');smartCsync.onload=function(){if (navigator && navigator.platform) {
+    var sasIsIosWebview = false;
+    if (navigator.platform.substr(0,2) === 'iP') {
+      var lte9 = /constructor/i.test(window.HTMLElement);
+      var nav = window.navigator, ua = nav.userAgent, idb = !!window.indexedDB;
+      if (ua.indexOf('Safari') !== -1 && ua.indexOf('Version') !== -1 && !nav.standalone) {      
+        sasIsIosWebview = false;
+      } else if ((!idb && lte9) || !window.statusbar.visible) {
+        sasIsIosWebview = true;
+      } else if ((window.webkit && window.webkit.messageHandlers) || !lte9 || idb) {
+        sasIsIosWebview = true;
+      }
+    } 
+    if (!sasIsIosWebview) {
+        var csyncCname=new Image;csyncCname.src='//rtb-csync.smartadserver.com/h/cs/cn?cname=adnetwork.adasiaholdings.com&ts=637292854871755244';
+    }
+};};smartCsync.src='//csync.smartadserver.com/diff/rtb/csync/CookieSync.html?nwid=2060&dcid=8&gdpr=0&gdprc=';
+        smartCsync.scrolling = 'no';smartCsync.frameBorder = 0;smartCsync.width = 0;smartCsync.height = 0;smartCsync.style.margin = 0;smartCsync.style.padding = 0;smartCsync.style.display = 'none';smartCsync.style.width = '0px';smartCsync.style.height = '0px';smartCsync.style.visibility = 'hidden';
+        if(document.body != null)document.body.appendChild(smartCsync);
+    }
+}
+if (navigator && navigator.userAgent) {
+    var sasIsIosUiwebview = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
+    if (!sasIsIosUiwebview) {
+        new Image().src='https://sync.smartadserver.com/getuid?url=https%3a%2f%2fadnetwork.adasiaholdings.com%2fsetuid%3fuid%3d%5bsas_uid%5d';
+    }
+}
+sas.noad("sas_44269");
