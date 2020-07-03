@@ -1,0 +1,398 @@
+/*
+ * @Description: DSP&M监控漏斗
+ * @version: 
+ * @Author: yaoshun
+ * @LastEditors: yaoshun
+ * @Date: 2019-04-25 18:28:27
+ * @LastEditTime: 2019-05-16 15:16:22
+ */
+
+
+(function(win){
+
+  /**
+   * @description: 将对象转为键值对参数字符串
+   * @param {Object} o  
+   * @return: 返回&链接的字符串
+   */
+  function params(o) {
+    var a = [];
+    for(var i in o){
+        a.push(i+'='+o[i])
+    }
+    return a.join('&')
+  }
+  
+  /**
+   * @description: 发送上报方法
+   * @param {String} host 日志服务器url地址
+   * @param {Object} data 参数对象
+   * @param {Function} cb 回调函数
+   * @return: 
+   */
+  function send(url, cb){
+    if(typeof cb != 'function'){cb = function(){};}
+    var img = new Image(1,1);
+    img.onload = img.onerror = img.onabort = function(){
+      cb();
+      img.onload = img.onerror = img.onabort = null;
+      img = null;
+    };
+
+    img.src = url;
+  }
+
+  /**
+   * @description: 暴露外部核心方法
+   * @param {String} key 上报类别标识
+   * @param {Object} data 额外扩充的数据
+   * @param {String} cb 回调函数
+   * @return: 
+   */
+  function mvtag(key, data, cb){
+    if(data){
+      if(typeof data !== 'object' || data instanceof Array){
+        data = {ext1: data || ''}
+      }
+    }
+    switch(key){
+      case 'error': 
+        errorHelper(data, cb)
+        break;
+      case 'per':
+        perHelper(data, cb)
+        //host += 'key='+mv_base.perfokey
+        break;
+      default:
+        defaultHelper(key, data, cb)
+        //host += 'key='+mv_base.impkey+'&t='+key
+        break;
+    }
+  }
+
+  /**
+   * @description: 生成上报的url 
+   * @param {Object} data 传入参数对象 
+   * @return: 
+   */
+  function getPosUrl(data){
+    mv_base.coreData.tms = +new Date;
+    var str = params(Object.assign({},data,mv_base.coreData))
+    var url = mv_base.host + (mv_base.host.indexOf("?") < 0 ? "?" : "&") + str
+    return url
+  }
+
+  /**
+   * @description: 异常上报helper
+   * @param {type} 
+   * @return: 
+   */
+  function errorHelper(event, cb){
+    var data = {
+      msg: event.message,
+      url: location.href,
+      line: event.lineno,
+      col: event.colno,
+      error: event.error ? event.error.stack : event.stack,
+      origin: event.origin
+    }
+  
+    data = {
+      key: mv_base.errkey,
+      err: btoa((params(data)))
+    }
+    var url = getPosUrl(data)
+    send(url, cb)
+  }
+
+  /**
+   * @description: 性能上报helper 
+   * @param {type} 
+   * @return: 
+   */  
+  function perHelper(data, cb){
+    var timing = win.performance.timing;
+    var obj = {
+      red: timing.redirectEnd - timing.redirectStart,
+      dns: timing.domainLookupEnd - timing.domainLookupStart,
+      tcp: timing.connectEnd - timing.connectStart,
+      col: timing.responseEnd - timing.responseStart,
+      domt: timing.domComplete - timing.domInteractive,
+      whi:  timing.responseStart - timing.navigationStart,
+      domr: timing.domContentLoadedEventEnd - timing.navigationStart,
+      load: timing.loadEventEnd - timing.navigationStart
+    }
+    var data = Object.assign({
+      key: mv_base.perfokey,
+      per: btoa(params(obj))
+    }, data)
+    var url = getPosUrl(data)
+    send(url, cb)
+  }
+
+  /**
+   * @description: 通用上报helper 
+   * @param {type} 
+   * @return: 
+   */  
+  function defaultHelper(t, data, cb){
+    var data = Object.assign(
+      {
+        key: mv_base.impkey,
+        t: t,
+      },
+      data
+    )
+    var url = getPosUrl(data)
+    send(url, cb)
+  }
+
+  /**
+   * @description: 异常监控初始化
+   * @param {type} 
+   * @return: 
+   */
+  function resError(){
+    win.addEventListener('error', function(event){
+      event.origin = 'global';
+      mvtag('error',event)
+    })
+  }
+
+  function polyfill(){
+    // Object.assign
+    if (typeof Object.assign != 'function') {
+      // Must be writable: true, enumerable: false, configurable: true
+      Object.defineProperty(Object, "assign", {
+        value: function assign(target, varArgs) { // .length of function is 2
+          'use strict';
+          if (target == null) { // TypeError if undefined or null
+            throw new TypeError('Cannot convert undefined or null to object');
+          }
+          let to = Object(target);
+          for (var index = 1; index < arguments.length; index++) {
+            var nextSource = arguments[index];
+            if (nextSource != null) { // Skip over if undefined or null
+              for (let nextKey in nextSource) {
+                // Avoid bugs when hasOwnProperty is shadowed
+                if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                  to[nextKey] = nextSource[nextKey];
+                }
+              }
+            }
+          }
+          return to;
+        },
+        writable: true,
+        configurable: true
+      });
+    }
+  }
+
+  function setDspData(){
+    try {
+      var a = JSON.parse(decodeURIComponent(OMG.config));
+      var coreData = {
+        "rid": a['rid'],
+        "aid": a['aid'],
+        "cid":a['cid'],
+        "uid":'',
+        "adx":a['adx'],
+        "sz":a['sz'],
+        "os":a['os'],
+        "osv":a['osv'],
+        "db":a['db'],
+        "dm":a['dm'],
+        "dt":a['dt'],
+        "oid":a['oid'],
+        "at":a['at'],
+        "nt":a['nt'],
+        "tid":a['tid'],
+        "pn":a['pn'],
+        "ct":a['ct'],
+        "ip":a['ip'],
+        "did":a['did'],
+        "sco":'',
+        "dmv":''
+      }
+      mv_base.coreData = Object.assign(mv_base.coreData, coreData)
+
+    } catch (error) {
+      mvtag('error', error)
+    }
+  }
+
+  function setMData(){
+
+    function fnSucc(res){
+      var p = res.campaignList[0];
+      var t = {
+        plantform: "-1",
+        system_version: "-1",
+        network_type: "-1",
+        device: "-1"
+      };
+      res.device && (t = res.device);
+      var coreData = {
+        "rid":function(e) {
+          var t = []
+            , r = {};
+          if (-1 !== e.indexOf("?")) {
+              var o = e.split("?")[1];
+              if (-1 !== o.indexOf("&")) {
+                  t = o.split("&");
+                  for (var n = 0; n < t.length; n++)
+                      r[t[n].split("=")[0]] = t[n].split("=")[1]
+              } else
+                  r[o.split("=")[0]] = o.split("=")[1]
+          }
+          return r
+      }(p.notice_url).k,
+        "aid":"",
+        "cid":"",
+        "uid":res.unit_id,
+        "adx":"",
+        "sz":"",
+        "os":t.plantform,
+        "osv":t.system_version,
+        "db":t.device,
+        "dmv":res.sdk_info,
+        "dt":"",
+        "oid":p.id,
+        "at":"",
+        "nt":t.network_type,
+        "tid":"",
+        "pn":"",
+        "ct":"",
+        "ip":"",
+        "did":"",
+        "sco":""
+      }
+      mv_base.coreData = Object.assign(mv_base.coreData, coreData)
+      mvtag('pv') 
+    }
+    
+    window.WindVane && window.WindVane.call('RewardJs', 'getEndScreenInfo', {pageNo: 1,exclude_ids: []}, 
+      function (res) {
+        fnSucc(res)
+      }, 
+      function (err) {
+        mvtag('error', err)
+      }
+    )
+  }
+
+  /**
+   * @description: 生成UUID
+   * @param {type} 
+   * @return: 
+   */
+  function uuid() {
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+ 
+    var uuid = s.join("");
+    return uuid;
+  }
+
+  function getCoreData(){
+    if(win.OMG && OMG.channel === 'dsp'){
+      setDspData()
+      mvtag('pv')
+    }else if(win.OMG && OMG.channel === 'm'){
+      win.addEventListener('load', function(){
+        setMData()
+      })
+      mvtag('prv') // M需要先加载windvine相关资源，才能与sdk建立连接，先发一个prv后面可以与pv通过uuid关联
+    }else{
+      mvtag = function(){}
+    }
+  }
+
+  function isTouch(){
+    var point = [],startX,startY;
+    var that = this;
+    document.addEventListener('touchstart',ts, false);
+    document.addEventListener('touchend',te, false);
+    
+    function ts(e) {
+      try {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      } catch (error) {
+        mvtag('error', error)
+      }
+    }
+
+    function te(e) {
+      try {
+        var endX = e.changedTouches[0].clientX;
+        var endY = e.changedTouches[0].clientY;
+        if(endX !== startX || endY !== startY){
+          startX = startX.toFixed(2);
+          startY = startY.toFixed(2);
+          endX = endX.toFixed(2);
+          endY = endY.toFixed(2);
+          winW = win.screen.availWidth;
+          winH = win.screen.availHeight;
+          point.push([startX,startY],[endX,endY],[winW,winH])
+          document.removeEventListener('touchstart',ts,false);
+          document.removeEventListener('touchend',te,false);
+          var extra = startX+'x'+startY+'_'+endX+'x'+endY+'_'+winW+'x'+winH
+          mvtag('fc',{fc_p: extra})
+        }
+      } catch (error) {
+        mvtag('error', error)
+      }
+    }
+  }
+
+  /**
+   * @description: 初始化方法
+   * @param {type} 
+   * @return: 
+   */
+  function init(){
+    resError()
+    polyfill()
+    getCoreData()
+    isTouch()
+  }
+
+  function check(){
+    return {
+      mraid: typeof mraid !== 'undefined'
+    }
+  }
+
+  var mv_base = {
+    host: 'https://analytics.rayjump.com/',
+    impkey: '7000030', // 业务展示上报
+    errkey: '7000040', // err 上报
+    perfokey: '7000050', // 性能上报
+    coreData: {
+      chn: win.OMG && OMG.channel,
+      uuid: uuid(), // 本次展示uuid
+    } // 核心业务数据
+  };
+
+
+  init();
+
+  win.addEventListener('load', function(){
+    mvtag('ld', check()) // 上报加载完毕
+    setTimeout(function(){
+      mvtag('per') // 上报性能
+
+    },10)
+  })
+
+  win.mvtag = mvtag;
+
+})(window)
