@@ -1,0 +1,530 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+
+    <title>Từ 1/7, có thể nộp phạt vi phạm giao thông trực tuyến trên toàn quốc</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main-v3.7.8.css">
+    <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.4/skins/default/aliplayer-min.css" />
+    <script type="text/javascript" src="/static/libs/cookies/cookies.min.js"></script>
+    <script type="text/javascript" src="/static/js/main-v2.9.js"></script>
+    <script type="text/javascript" src="/static/js/crypto-js.min.js"></script>
+    <script type="text/javascript" src="/static/js/postscribe.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="//g.alicdn.com/de/prismplayer/2.7.4/aliplayer-min.js"></script>
+    <script src="https://cdn.bootcss.com/babel-polyfill/7.0.0-alpha.9/polyfill.min.js"></script>
+    <style>
+        a{-webkit-tap-highlight-color:rgba(0,0,0,.1)}
+
+        video{
+            margin-top: 0 !important;
+        }
+        .prism-progress-cursor img {
+            margin-top: 0 !important;
+        }
+
+        .sixth .sixth_main {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            position: relative;
+        }
+
+        .sixth .sixth_main span {
+            margin: 15px;
+            color: #898989;
+        }
+
+        .sixth .sixth_main:before,
+        .sixth .sixth_main:after {
+            content: "";
+            -webkit-box-flex: 1;
+            -moz-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flexbox: 1;
+            flex: 1;
+            border-top: 1px solid #ccc;
+            transform: translate(0, 50%);
+            -webkit-transform: translate(0, 50%);
+            -os-transform: translate(0, 50%);
+            -moz-transform: translate(0, 50%);
+        }
+        .debugInfo {
+            display: none;
+            font-size: 0.6em;
+            text-align: left;
+        }
+        #player_wrapper {
+            overflow: hidden;
+        }
+        #connectionInfo {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000000;
+            z-index: 9999;
+        }
+
+        #connectionSpan {
+            display: inline-block;
+            position: absolute;
+            padding: 6px 0;
+            text-align: center;
+            width: 70%;
+            left: 50%;
+            top: 50%;
+            color: #ffffff;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            transform: translate(-50%, -50%);
+        }
+        .prism-player .prism-volume .volume-icon .long-horizontal {
+            transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+             
+            -moz-transform: translateY(-50%);
+             
+            -webkit-transform: translateY(-50%);
+             
+            -o-transform: translateY(-50%);
+        }
+
+        .prism-player .prism-volume .volume-icon .short-horizontal {
+            transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+             
+            -moz-transform: translateY(-50%);
+             
+            -webkit-transform: translateY(-50%);
+             
+            -o-transform: translateY(-50%);
+        }
+         
+        .actionBox {
+            display: block;
+            position: relative;
+            padding: 10px 0;
+            border-bottom: 5px solid #f4f4f4;
+        }
+
+        .likeAction {
+            display: block;
+            position: relative;
+            width: 16vw;
+            height: 16vw;
+            margin: 20px auto;
+            background-image: url('/static/image/like_show.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            transition-property: background-image, height, width;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        .unlikeAction {
+            display: block;
+            position: relative;
+            width: 16vw;
+            height: 16vw;
+            margin: 20px auto;
+            background-image: url('/static/image/unlike_show.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            transition-property: background-image, height, width;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        .commentTitle {
+            display: block;
+            position: relative;
+            color: #EA3323;
+            padding: 10px 0;
+        }
+
+        .commentBox {
+            display: block;
+            position: relative;
+            padding-left: 4vw;
+            width: 100%;
+            box-sizing:border-box;
+        }
+
+        .commentItem {
+            display: block;
+            position: relative;
+            width: 100%;
+            padding: 10px 0;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .commentItem .userAvatar {
+            display: inline-block;
+            position: relative;
+            width: 12vw;
+            height: 12vw;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            vertical-align: top;
+        }
+
+        .commentItem .userComment {
+            display: inline-block;
+            width: 80%;
+            margin-left: 4px;
+            position: relative;
+        }
+
+        .userInfo {
+            display: inline-block;
+            position: relative;
+            width: 70%;
+        }
+
+        .userHead {
+            display: block;
+            position: relative;
+            height: 13vw;
+        }
+
+        .userName {
+            display: inline-block;
+            position: relative;
+            font-size: .9em;
+            color: #535353;
+        }
+
+        .commentDate {
+            display: inline-block;
+            position: relative;
+            font-size: .7em;
+            color: #535353;
+        }
+
+        .likeCount {
+            float: right;
+            width: 18vw;
+            position: relative;
+            margin-right: 2px;
+            font-size: .8em;
+            color: #C3C3C3;
+        }
+
+        .unlikeImg {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 4px;
+            vertical-align: bottom;
+            background-image: url('/static/image/unlike_action.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            transition-property: background-image, height, width;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        .likeImg {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 4px;
+            vertical-align: bottom;
+            background-image: url('/static/image/like_action.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            transition-property: background-image, height, width;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        .counts {
+            display: inline-block;
+            position: relative;
+            margin-left: 4px;
+        }
+
+        @-webkit-keyframes fadeOutUp {
+            from {
+                opacity: 0;
+                -webkit-transform: translate3d(0, -100%, 0);
+                transform: translate3d(0, -100%, 0);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutUp {
+            from {
+                opacity: 0;
+                -webkit-transform: translate3d(0, -100%, 0);
+                transform: translate3d(0, -100%, 0);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fadeOutUp {
+            display: inline-block;
+            position: relative;
+            margin-left: 4px;
+            -webkit-animation-name: fadeOutUp;
+            animation-name: fadeOutUp;
+            animation-duration: 1s;
+            animation-delay: 0;
+            animation-iteration-count: 1;
+        }
+
+        @-webkit-keyframes fadeOutDown {
+            from {
+                opacity: 0;
+                -webkit-transform: translate3d(0, 100%, 0);
+                transform: translate3d(0, 100%, 0);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutDown {
+            from {
+                opacity: 0;
+                -webkit-transform: translate3d(0, 100%, 0);
+                transform: translate3d(0, 100%, 0);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fadeOutDown {
+            display: inline-block;
+            position: relative;
+            margin-left: 4px;
+            -webkit-animation-name: fadeOutDown;
+            animation-name: fadeOutDown;
+            animation-duration: 1s;
+            animation-delay: 0;
+            animation-iteration-count: 1;
+        }
+
+        .countsUp {
+            display: inline-block;
+            position: relative;
+            margin-left: 4px;
+            background-position: center center;
+            transition-property: height, width;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        .userComment .commentContent {
+            display: block;
+            position: relative;
+            margin: 10px 0;
+            font-size: .9em;
+            color: #000;
+        }
+
+         
+
+        .prism-player .prism-liveshift-progress .prism-progress-cursor img,
+        .prism-player .prism-progress .prism-progress-cursor img {
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+             
+            -moz-transform: translate(-50%, -50%);
+             
+            -webkit-transform: translate(-50%, -50%);
+             
+            -o-transform: translate(-50%, -50%);
+        }
+    </style>
+    
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W4H8G7K');</script>
+    
+    <script data-ad-client="ca-pub-7534602298742440" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+<body class="0">
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W4H8G7K"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+<div class="m">
+    <div class="tt">Từ 1/7, có thể nộp phạt vi phạm giao thông trực tuyến trên toàn quốc</div>
+
+    <div class="dt author-top clearfix">
+        <div class="author-avatar">
+            <img src="https://images.headlines.pw/topnews-2017/imgs/54/f8/54f8446d16205bf7c606134770d34b1f.jpg" alt="user avatar">
+        </div>
+        <div class="author-info">
+            <h3 class="author-name">Báo Chính phủ</h3>
+            <p class="publish-time">01-07-2020 14:45</p>
+        </div>
+    </div>
+
+
+
+
+    <div class="sum">
+    (Chinhphu.vn) - Việc nộp phạt vi phạm giao thông trực tuyến đã được thí điểm tại Hà Nội, TPHCM, Đà Nẵng, Hải Phòng, Bình Thuận từ tháng 3 vừa qua, và từ hôm nay (1/7), việc nộp phạt theo hình thức này sẽ được áp dụng trong toàn quốc, thông qua Cổng Dịch vụ công quốc gia (DVCQG).
+    </div>
+
+
+    <div class="c">
+    
+
+    
+        <img image-article onclick=image(this)
+             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+             s_src="http://images.headlines.pw/topnews-2017/imgs/33/bf/33bf81ff9658f890ace7249f2b6e8b8d1c4213de_640_473.jpg"
+             b_src="http://images.headlines.pw/topnews-2017/imgs/33/bf/33bf81ff9658f890ace7249f2b6e8b8d1c4213de_640_473.jpg"
+             w="  "
+             h=" " />
+    
+
+    
+
+    
+    
+
+    
+
+    
+        <p class="alt ">Đại tá Đỗ Thanh Bình giới thiệu dịch vụ nộp phạt vi phạm hành chính về giao thông. Ảnh: VGP/Hoàng Giang</p>
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p> Sau 7 ngày kể từ khi nhận quyết định xử phạt, người dân truy cập vào Cổng DVCQG (theo địa chỉ dichvucong.gov.vn) để nhập số biên bản vi phạm hành chính; ngày, tháng, năm vi phạm; họ và tên… sẽ tìm ra quyết định, số tiền bị xử phạt. Sau đó thực hiện các bước thanh toán qua ngân hàng/trung tâm thanh toán, nhận biên lai. </p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Cảnh sát giao thông (CSGT) căn cứ vào biên lai thu tiền phạt để trả giấy tờ cho người dân qua bưu điện. Như vậy, người dân không phải đến các kho bạc, ngân hàng nộp tiền và đến trụ sở công an lấy lại giấy tờ.</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Theo báo cáo của VPCP, thời gian qua, số lượng người tra cứu để thực hiện nộp phạt vi phạm hành chính trong lĩnh vực này tương đối lớn, khoảng hơn 16.000 lượt. CSGT đã cung cấp gần 11.000 dữ liệu về các trường hợp vi phạm hành chính để phục vụ tra cứu, nộp phạt trực tuyến. Tuy nhiên, số lượng thực hiện nộp phạt vi phạm còn thấp do nhiều nguyên nhân như: Phạm vi thực hiện thí điểm còn hẹp (5 địa phương đối với thẩm quyền xử phạt của phòng CSGT và các đơn vị thanh tra giao thông thuộc Tổng cục Đường bộ), cơ sở hạ tầng của các đơn vị thực hiện dịch vụ còn hạn chế, tâm lý, thói quen của người dân còn e ngại khi thực hiện theo hình thức trực tuyến…</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Do đó, để nâng cao chất lượng phục vụ, từ 1/7, việc nộp phạt xử lý vi phạm hành chính trong lĩnh vực giao thông trực tuyến sẽ được mở rộng phạm vi thực hiện, đó là thực hiện trên toàn quốc đối với thẩm quyền xử phạt của thanh tra giao thông, của chỉ huy cấp đội trở lên thuộc phòng CSGT công an các địa phương và các đơn vị thuộc Cục CSGT (Bộ Công an).</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Giới thiệu dịch vụ nộp phạt vi phạm hành chính về giao thông thuộc thẩm quyền của CSGT tại buổi họp báo sáng 1/7, Đại tá Đỗ Thanh Bình, Phó Cục trưởng Cục CSGT cho biết, từ đầu năm đến nay, lực lượng CSGT toàn quốc xử phạt khoảng 1,6 triệu trường hợp vi phạm. Mỗi trường hợp vi phạm phải lập 2 biên bản và ra 3 quyết định ký bản giấy. “Nếu chúng ta cải cách được và có sự đồng thuận của người dân thì việc nộp phạt trực tuyến sẽ giúp minh bạch, tiết kiệm công sức và tiền của nhà nước, người dân rất lớn”, Đại tá Đỗ Thanh Bình nhấn mạnh.</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Hiện nay CSGT đã nhập vào phần mềm khoảng 65% tổng số các biên bản vi phạm. Dự kiến đến hết năm nay sẽ triển khai đồng bộ, 100% biên bản và quyết định xử phạt của CSGT phải thực hiện trên phần mềm. </p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Cũng tại họp báo, một dịch vụ công được giới thiệu thêm đó là dịch vụ cấp mới, đổi giấy phép lái xe do ngành GTVT cấp mức độ 4.</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Đại diện Tổng cục Đường bộ (Bộ GTVT) cho biết, dịch vụ này được nâng cấp từ mức độ 3 (khi khai trương Cổng DVCQG) lên mức độ 4 trên cơ sở tích hợp, chia sẻ dữ liệu khám sức khỏe của Bộ Y tế và xử lý vi phạm hành chính trong lĩnh vực giao thông đường bộ của Bộ Công an. Theo đó người dân chỉ cần ngồi nhà thực hiện thao tác, thủ tục và giấy phép lái xe có thể được chuyển đến tận nhà nếu người dân yêu cầu.</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Dịch vụ này sẽ thí điểm từ 1/7 tại Tổng cục Đường bộ, TP. Hà Nội và tỉnh Hà Nam, với 3 bệnh viện ở Hà Nội (Giao thông vận tải, E và Đa khoa Hà Đông) và 8 bệnh viện, trung tâm y tế ở Hà Nam (Bệnh viện Đa khoa tỉnh Hà Nam, Bệnh viện Đa khoa Nam Lý, Trung tâm y tế huyện Bình Lục, Kim Bảng, Lý Nhân, Thanh Liêm, thị xã Duy Tiên và Trung tâm Giám định y khoa tỉnh).</p>
+    
+    
+
+    
+
+    
+
+    
+        <p>Theo tính toán, nếu đưa dịch vụ này triển khai toàn quốc mức độ 4 phục vụ trung bình khoảng hơn 965.000 lượt người thực hiện hàng năm, ước tính số tiền tiết kiệm tăng thêm so với thực hiện dịch vụ công trực tuyến mức độ 3 gần 324 tỷ đồng/năm.</p>
+    
+    
+
+    
+
+    
+
+    
+        <p><strong>Hoàng Giang</strong></p>
+    
+    
+    
+    </div>
+
+</div>
+
+<script type="text/javascript" src="/static/js/recommendListProduct_v53.js"></script>
+<script type="text/javascript" src="/static/js/xb_adx.oppo.631e8023f2.js"></script>
+
+</body>
+</html>
+
+
