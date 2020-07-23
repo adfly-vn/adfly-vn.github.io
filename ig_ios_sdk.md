@@ -26,7 +26,7 @@ XBInterActiveAdManager.shared.start(appKey: appKey, appSecret: appSecret, comple
 
 ```
   
-#### Params
+#### showAd
 * scale:  default is 1， size: (100, 100)
 * origin: defalut distance is  0.1 * custom.bounds.height  to customView bottom
 * customView: the superView of adView
