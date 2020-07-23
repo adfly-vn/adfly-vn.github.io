@@ -10,6 +10,9 @@
 
 ## XBInterActiveAdSDK.framework Usage
 
+There are two api. It's recommended to call Init api when app is start.
+And call showAd when you want show floatIcon.
+
 ### Import
  * import XBInterActiveAdSDK
 
