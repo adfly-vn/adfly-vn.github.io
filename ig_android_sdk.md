@@ -1,6 +1,10 @@
 
 # Interactive Game
 
+> The document is outdated. Please see the [new doc](https://doc.adfly.vn/docs/android/)!  
+> The document is outdated. Please see the [new doc](https://doc.adfly.vn/docs/android/)!  
+> The document is outdated. Please see the [new doc](https://doc.adfly.vn/docs/android/)!  
+
 
 ## Steps
 
