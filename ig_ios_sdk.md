@@ -5,7 +5,7 @@
 ## Steps
 
 1. Apply appKey and appSecret
-2. Download and intergated [SDK](sdk/ig/Adfly ios sdk.zip)
+2. Download and intergated [SDK](sdk/ig/iOS sdk.zip)
 
 
 ## XBInterActiveAdSDK.framework Usage
